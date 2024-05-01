@@ -9,9 +9,6 @@ namespace Owl
 		[SerializeField] private Single _Smoothness = 1f;
 
 		private Quaternion _OriginRotation;
-		[SerializeField] private Quaternion _Rotation;
-		[SerializeField] private Quaternion _XAdjustment;
-		[SerializeField] private Quaternion _YAdjustment;
 
 		private void Start()
 		{
@@ -27,12 +24,12 @@ namespace Owl
 		{
 			Vector2 input = PlayerInputHandler.PlayerLook;
 
-			_XAdjustment = Quaternion.AngleAxis(-_Intensity.x * input.x, Vector3.up);
-			_YAdjustment = Quaternion.AngleAxis(_Intensity.y * input.y, Vector3.right);
-			Quaternion targetRotation = _OriginRotation * _XAdjustment * _YAdjustment;
+			Quaternion xAdjustment = Quaternion.AngleAxis(-_Intensity.x * input.x, Vector3.up);
+			Quaternion yAdjustment = Quaternion.AngleAxis(_Intensity.y * input.y, Vector3.right);
+			Quaternion targetRotation = _OriginRotation * xAdjustment * yAdjustment;
 
-			_Rotation = Quaternion.Lerp(transform.localRotation , targetRotation, Time.deltaTime * _Smoothness);
-			transform.localRotation = _Rotation;
+			Quaternion rotation = Quaternion.Lerp(transform.localRotation, targetRotation, Time.deltaTime * _Smoothness);
+			transform.localRotation = rotation;
 		}
 	}
 }
