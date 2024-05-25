@@ -9,12 +9,15 @@ namespace Owl
 		[SerializeField] private Single _MaxMovementAmount = 0.1f;
 		[SerializeField] private Single _MovementSmoothness = 6f;
 
-		[Header("Rotation"), SerializeField] private Vector2 _RotationAmount;
-		[SerializeField] private Single _MaxRotationAmount;
-		[SerializeField] private Single _RotationSmoothness;
-		[Space, SerializeField] private Boolean _RotationX = true;
-		[SerializeField] private Boolean _RotationY = true;
-		[SerializeField] private Boolean _RotationZ = true;
+		[Header("Tilt"), SerializeField] private Vector2 _TiltAmount = new Vector2(4, 4);
+		[SerializeField] private Single _MaxTiltAmount = 1;
+		[SerializeField] private Single _TiltSmoothness = 1;
+		[Space, SerializeField] private Boolean _TiltX = true;
+		[SerializeField] private Boolean _TiltY = true;
+		[SerializeField] private Boolean _TiltZ = true;
+
+		[Header("Rotation"), SerializeField] private Vector2 _RotationIntensity = new Vector2(1, 1);
+		[SerializeField] private Single _RotationSmoothness = 1;
 
 		private Vector3 _OriginPosition;
 		private Quaternion _OriginRotation;
@@ -30,10 +33,12 @@ namespace Owl
 			Vector2 input = CalculateSway();
 
 			MoveSway(input);
+
 			TiltSway(input);
+			RotateSway(input);
 		}
 
-		private void TiltSway(Vector2 input)
+		private void MoveSway(Vector2 input)
 		{
 			Single xAdjustment = Mathf.Clamp(_MovementAmount.x * input.x, -_MaxMovementAmount, _MaxMovementAmount);
 			Single yAdjustment = Mathf.Clamp(_MovementAmount.y * input.y, -_MaxMovementAmount, _MaxMovementAmount);
@@ -43,17 +48,27 @@ namespace Owl
 			transform.localPosition = Vector3.Lerp(transform.localPosition, _OriginPosition + targetPosition, Time.deltaTime * _MovementSmoothness);
 		}
 
-		private void MoveSway(Vector2 input)
+		private void TiltSway(Vector2 input)
 		{
-			Single yAdjustment = Mathf.Clamp(input.x * _RotationAmount.x, -_MaxRotationAmount, _MaxRotationAmount);
-			Single xAdjustment = Mathf.Clamp(input.y * _MovementAmount.y, -_MaxRotationAmount, _MaxRotationAmount);
+			Single yAdjustment = Mathf.Clamp(input.x * _TiltAmount.x, -_MaxTiltAmount, _MaxTiltAmount);
+			Single xAdjustment = Mathf.Clamp(input.y * _MovementAmount.y, -_MaxTiltAmount, _MaxTiltAmount);
 
-			Single targetX = _RotationX ? -xAdjustment : 0;
-			Single targetY = _RotationY ? yAdjustment : 0;
-			Single targetZ = _RotationZ ? yAdjustment : 0;
+			Single targetX = _TiltX ? -xAdjustment : 0;
+			Single targetY = _TiltY ? yAdjustment : 0;
+			Single targetZ = _TiltZ ? yAdjustment : 0;
 			Quaternion targetRotation = Quaternion.Euler(new Vector3(targetX, targetY, targetZ));
 
-			transform.localRotation = Quaternion.Slerp(transform.localRotation, _OriginRotation * targetRotation, Time.deltaTime * _RotationSmoothness);
+			transform.localRotation = Quaternion.Slerp(transform.localRotation, _OriginRotation * targetRotation, Time.deltaTime * _TiltSmoothness);
+		}
+
+		private void RotateSway(Vector2 input)
+		{
+			Quaternion xAdjustment = Quaternion.AngleAxis(-_RotationIntensity.x * input.x, Vector3.up);
+			Quaternion yAdjustment = Quaternion.AngleAxis(_RotationIntensity.y * input.y, Vector3.right);
+
+			Quaternion targetRotation = _OriginRotation * xAdjustment * yAdjustment;
+
+			transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, Time.deltaTime * _RotationSmoothness);
 		}
 
 		private static Vector2 CalculateSway()
