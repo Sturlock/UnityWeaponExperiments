@@ -9,10 +9,10 @@ namespace Owl
 		[SerializeField] private Single _Rpm = 120;
 		[SerializeField] private GameObject _Barrel;
 		[SerializeField] private LayerMask _LayerMask;
-		[SerializeField] private Double _Timer;
-		[SerializeField] private Single _FireRate;
 		private Camera _Camera;
 		private InputAction.CallbackContext _FireCallback;
+		private Single _FireRate;
+		private Double _Timer;
 
 		private void Start()
 		{
@@ -20,7 +20,7 @@ namespace Owl
 
 			const Single MINUTE_IN_SECONDS = 60;
 			Single rps = _Rpm / MINUTE_IN_SECONDS;
-			_FireRate = 1/rps;
+			_FireRate = 1 / rps;
 
 			PlayerInputHandler.WeaponFireAction += context => _FireCallback = context;
 		}
@@ -42,7 +42,7 @@ namespace Owl
 			}
 			else
 			{
-				_Timer -= Time.fixedDeltaTime;
+				_Timer -= Time.deltaTime;
 			}
 		}
 	}
