@@ -102,7 +102,6 @@ namespace Owl
 		private static void RegisterGameplayControls()
 		{
 			Controls.Gameplay.Fire.performed += context => WeaponFireAction?.Invoke(context);
-			Controls.Gameplay.Fire.canceled += context => WeaponFireAction?.Invoke(context);
 			Controls.Gameplay.Zoom.performed += _ => WeaponAimAction?.Invoke();
 			Controls.Gameplay.Reload.performed += _ => WeaponReloadAction?.Invoke();
 
