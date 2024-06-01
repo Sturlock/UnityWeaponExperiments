@@ -9,10 +9,12 @@ namespace Owl
 		[SerializeField] private Single _Rpm = 120;
 		[SerializeField] private GameObject _Barrel;
 		[SerializeField] private LayerMask _LayerMask;
+		[SerializeField] private Boolean _FullAuto;
 		private Camera _Camera;
 		private InputAction.CallbackContext _FireCallback;
 		private Single _FireRate;
 		private Double _Timer;
+		private Int32 _ShotsFired;
 
 		private void Start()
 		{
@@ -29,7 +31,12 @@ namespace Owl
 		{
 			if (_Timer < 0)
 			{
-				if (_FireCallback.phase is not InputActionPhase.Performed) return;
+				if (_FireCallback.phase is not InputActionPhase.Performed)
+				{
+					_ShotsFired = 0;
+					return;
+				}
+				if (!_FullAuto && _ShotsFired >= 1) return;
 
 				Vector3 barrelPoint = _Barrel.transform.position;
 				Vector2 direction = new(0.5F, 0.5F);
@@ -42,6 +49,7 @@ namespace Owl
 				}
 
 				_Timer = _FireRate;
+				_ShotsFired++;
 			}
 			else
 			{
