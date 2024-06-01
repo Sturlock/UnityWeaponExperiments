@@ -19,7 +19,8 @@ namespace Owl
 
 		private void Start()
 		{
-			_Magazine = GetComponent<Magazine>();
+			//This is safe to do as there should only be one Magazine per weapon.
+			_Magazine = GetComponentInChildren<Magazine>();
 			_Camera = Camera.main;
 
 			const Single MINUTE_IN_SECONDS = 60;
