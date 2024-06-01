@@ -36,7 +36,10 @@ namespace Owl
 				Ray shotRay = _Camera.ViewportPointToRay(direction);
 				Ray shot = new(barrelPoint, shotRay.direction);
 
-				if (Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask)) Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
+				if (Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask))
+				{
+					Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
+				}
 
 				_Timer = _FireRate;
 			}
