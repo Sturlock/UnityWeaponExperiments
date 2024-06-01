@@ -13,6 +13,7 @@ namespace Owl
 		[SerializeField] private GameObject _Barrel;
 		[SerializeField] private LayerMask _LayerMask;
 		[SerializeField] private Boolean _FullAuto;
+		[SerializeField] private Single _Damage;
 		private Camera _Camera;
 		private InputAction.CallbackContext _FireCallback;
 		private Single _FireRate;
@@ -53,6 +54,8 @@ namespace Owl
 				if (Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask))
 				{
 					Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
+					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
+					damageable?.DamageTarget(_Damage);
 				}
 
 				_Timer = _FireRate;
