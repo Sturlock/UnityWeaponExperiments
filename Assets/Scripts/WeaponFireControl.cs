@@ -13,29 +13,32 @@ namespace Owl
 		private Camera _Camera;
 		private InputAction.CallbackContext _FireCallback;
 		private Single _FireRate;
-		private Double _Timer;
+		private Magazine _Magazine;
 		private Int32 _ShotsFired;
+		private Single _Timer;
 
 		private void Start()
 		{
+			_Magazine = GetComponent<Magazine>();
 			_Camera = Camera.main;
 
 			const Single MINUTE_IN_SECONDS = 60;
 			Single rps = _Rpm / MINUTE_IN_SECONDS;
 			_FireRate = 1 / rps;
-
-			PlayerInputHandler.WeaponFireAction += context => _FireCallback = context;
 		}
 
 		private void Update()
 		{
 			if (_Timer < 0)
 			{
+				if (!CanShootWeapon()) return;
+
 				if (_FireCallback.phase is not InputActionPhase.Performed)
 				{
 					_ShotsFired = 0;
 					return;
 				}
+
 				if (!_FullAuto && _ShotsFired >= 1) return;
 
 				Vector3 barrelPoint = _Barrel.transform.position;
@@ -50,11 +53,37 @@ namespace Owl
 
 				_Timer = _FireRate;
 				_ShotsFired++;
+				_Magazine.AmmunitionCount--;
 			}
 			else
 			{
 				_Timer -= Time.deltaTime;
 			}
+		}
+
+		private void OnEnable()
+		{
+			PlayerInputHandler.WeaponFireAction += context => _FireCallback = context;
+			PlayerInputHandler.WeaponReloadAction += WeaponReload;
+		}
+
+		private void OnDisable()
+		{
+			PlayerInputHandler.WeaponFireAction -= context => _FireCallback = context;
+			PlayerInputHandler.WeaponReloadAction -= WeaponReload;
+		}
+
+		private void WeaponReload()
+		{
+			_Timer = _FireRate;
+			_Magazine.Reload();
+		}
+
+		private Boolean CanShootWeapon()
+		{
+			if (_Magazine.CanShoot()) return true;
+			WeaponReload();
+			return false;
 		}
 	}
 }
