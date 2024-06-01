@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Owl
 {
+	/// <summary>
+	///    A class for handling the functionality of a Magazine.
+	/// </summary>
 	public class Magazine : MonoBehaviour
 	{
 		[SerializeField] private Int32 _AmmunitionCount = 30;

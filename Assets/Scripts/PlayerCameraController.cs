@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Owl
 {
+	/// <summary>
+	///    Handles how the user moves the player camera.
+	/// </summary>
 	public class PlayerCameraController : MonoBehaviour
 	{
 		[SerializeField] private Transform _PlayerTransform;

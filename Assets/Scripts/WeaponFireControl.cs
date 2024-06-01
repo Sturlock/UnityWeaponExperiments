@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 namespace Owl
 {
+	/// <summary>
+	///    A class for handing how a weapon fires
+	/// </summary>
 	public class WeaponFireControl : MonoBehaviour
 	{
 		[SerializeField] private Single _Rpm = 120;

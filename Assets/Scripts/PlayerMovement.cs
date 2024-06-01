@@ -3,6 +3,10 @@ using UnityEngine;
 
 namespace Owl
 {
+	/// <summary>
+	///    A class for handling the players movement mechanics.
+	///    Requires a <see cref="CharacterController" />.
+	/// </summary>
 	[RequireComponent(typeof(CharacterController))]
 	public class PlayerMovement : MonoBehaviour
 	{
