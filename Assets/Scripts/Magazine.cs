@@ -10,6 +10,7 @@ namespace Owl
 	{
 		[SerializeField] private Int32 _AmmunitionCount = 30;
 		[SerializeField] private Int32 _MaxAmmunition = 30;
+		private Boolean _Reloading;
 
 		/// <summary>
 		///    The amount of ammunition currently available in the Magazine.
@@ -29,7 +30,10 @@ namespace Owl
 		public Boolean Reload()
 		{
 			if (_AmmunitionCount >= _MaxAmmunition) return false;
+			if (_Reloading) return false;
+			_Reloading = true;
 			_AmmunitionCount = _MaxAmmunition;
+			_Reloading = false;
 			return true;
 		}
 
