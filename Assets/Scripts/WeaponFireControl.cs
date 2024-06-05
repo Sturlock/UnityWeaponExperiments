@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 namespace Owl
 {
@@ -10,10 +11,19 @@ namespace Owl
 	public class WeaponFireControl : MonoBehaviour
 	{
 		[SerializeField] private Single _Rpm = 120;
+		[SerializeField, Range(1, 100)] private Int32 _ShotsPerRound;
+		[SerializeField] private Single _Damage;
+		[SerializeField] private Single _Spread;
+
 		[SerializeField] private GameObject _Barrel;
 		[SerializeField] private LayerMask _LayerMask;
 		[SerializeField] private Boolean _FullAuto;
-		[SerializeField] private Single _Damage;
+
+		[Header("Weapon Graphics")]
+		[SerializeField] private GameObject _MuzzleFlash;
+
+		[SerializeField] private GameObject _ImpactGraphic;
+
 		private Camera _Camera;
 		private InputAction.CallbackContext _FireCallback;
 		private Single _FireRate;
@@ -47,15 +57,32 @@ namespace Owl
 				if (!_FullAuto && _ShotsFired >= 1) return;
 
 				Vector3 barrelPoint = _Barrel.transform.position;
-				Vector2 direction = new(0.5F, 0.5F);
-				Ray shotRay = _Camera.ViewportPointToRay(direction);
-				Ray shot = new(barrelPoint, shotRay.direction);
-
-				if (Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask))
+				for (Int32 index = 0; index < _ShotsPerRound; index++)
 				{
+					//Spread
+					Single x = Random.Range(-_Spread, _Spread);
+					Single y = Random.Range(-_Spread, _Spread);
+
+					Vector3 direction = _Barrel.transform.forward + new Vector3(x, y, 0);
+
+					Ray shot = new(barrelPoint, direction);
+
+					if (!Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask)) continue;
+
 					Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
 					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
 					damageable?.DamageTarget(_Damage);
+
+					if (_ImpactGraphic)
+					{
+						Quaternion rotation = Quaternion.LookRotation(hit.normal);
+						Instantiate(_ImpactGraphic, hit.point, rotation);
+					}
+				}
+
+				if (_MuzzleFlash)
+				{
+					Instantiate(_MuzzleFlash, barrelPoint, Quaternion.identity, transform);
 				}
 
 				_Timer = _FireRate;

@@ -5,7 +5,7 @@ using Random = UnityEngine.Random;
 
 namespace Owl
 {
-	public class CamShake : MonoBehaviour
+	public class CameraShake : MonoBehaviour
 	{
 		public IEnumerator Shake(Single duration, Single magnitude)
 		{

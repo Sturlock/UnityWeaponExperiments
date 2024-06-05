@@ -36,7 +36,7 @@ namespace Owl
 		private Boolean _Shooting;
 		private Boolean _ReadyToShoot;
 		private Boolean _Reloading;
-		public CamShake camShake;
+		public CameraShake CameraShake;
 		public RaycastHit RayHit;
 
 		private void Awake()
@@ -90,7 +90,7 @@ namespace Owl
 			}
 
 			//ShakeCamera
-			camShake.Shake(camShakeDuration, camShakeMagnitude);
+			CameraShake.Shake(camShakeDuration, camShakeMagnitude);
 
 			//Graphics
 			Instantiate(bulletHoleGraphic, RayHit.point, Quaternion.Euler(0, 180, 0));
@@ -99,10 +99,10 @@ namespace Owl
 			_BulletsLeft--;
 			_BulletsShot--;
 
-			Invoke("ResetShot", timeBetweenShooting);
+			Invoke(nameof(ResetShot), timeBetweenShooting);
 
 			if (_BulletsShot > 0 && _BulletsLeft > 0)
-				Invoke("Shoot", timeBetweenShots);
+				Invoke(nameof(Shoot), timeBetweenShots);
 		}
 
 		private void ResetShot()
