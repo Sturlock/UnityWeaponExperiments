@@ -22,7 +22,7 @@ namespace Owl
 		/// <summary>
 		///    The callback action for aiming a weapon.
 		/// </summary>
-		public static Action WeaponAimAction;
+		public static Action<InputAction.CallbackContext> WeaponAimAction;
 
 		/// <summary>
 		///    The callback action for reloading a weapon.
@@ -102,7 +102,8 @@ namespace Owl
 		private static void RegisterGameplayControls()
 		{
 			Controls.Gameplay.Fire.performed += context => WeaponFireAction?.Invoke(context);
-			Controls.Gameplay.Zoom.performed += _ => WeaponAimAction?.Invoke();
+			Controls.Gameplay.Aim.performed += context => WeaponAimAction?.Invoke(context);
+			Controls.Gameplay.Aim.canceled += context => WeaponAimAction?.Invoke(context);
 			Controls.Gameplay.Reload.performed += _ => WeaponReloadAction?.Invoke();
 
 			Controls.Gameplay.Jump.performed += _ => PlayerJumpAction?.Invoke();

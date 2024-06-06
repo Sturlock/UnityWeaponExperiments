@@ -38,7 +38,7 @@
                     "id": "0060f715-146f-4beb-8fae-8e999e8c6719",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Press",
+                    "interactions": "",
                     "initialStateCheck": true
                 },
                 {
@@ -72,6 +72,15 @@
                     "name": "Reload",
                     "type": "Button",
                     "id": "8a2ac835-4685-4a55-b6ee-6b402a46703a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Aim",
+                    "type": "Button",
+                    "id": "c9e8de91-6405-4c2f-9565-8a0bf0589a69",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -395,6 +404,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ca245a71-566c-4725-8c6d-c64173549345",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "67527841-3b6c-4f5b-bae4-929447a2c341",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "PC",
+                    "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -62,7 +62,7 @@ namespace Owl
                     ""id"": ""0060f715-146f-4beb-8fae-8e999e8c6719"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Press"",
+                    ""interactions"": """",
                     ""initialStateCheck"": true
                 },
                 {
@@ -96,6 +96,15 @@ namespace Owl
                     ""name"": ""Reload"",
                     ""type"": ""Button"",
                     ""id"": ""8a2ac835-4685-4a55-b6ee-6b402a46703a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Aim"",
+                    ""type"": ""Button"",
+                    ""id"": ""c9e8de91-6405-4c2f-9565-8a0bf0589a69"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -419,6 +428,28 @@ namespace Owl
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ca245a71-566c-4725-8c6d-c64173549345"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""67527841-3b6c-4f5b-bae4-929447a2c341"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""Aim"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1118,6 +1149,7 @@ namespace Owl
             m_Gameplay_Crouch = m_Gameplay.FindAction("Crouch", throwIfNotFound: true);
             m_Gameplay_Zoom = m_Gameplay.FindAction("Zoom", throwIfNotFound: true);
             m_Gameplay_Reload = m_Gameplay.FindAction("Reload", throwIfNotFound: true);
+            m_Gameplay_Aim = m_Gameplay.FindAction("Aim", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1208,6 +1240,7 @@ namespace Owl
         private readonly InputAction m_Gameplay_Crouch;
         private readonly InputAction m_Gameplay_Zoom;
         private readonly InputAction m_Gameplay_Reload;
+        private readonly InputAction m_Gameplay_Aim;
         public struct GameplayActions
         {
             private @GameControls m_Wrapper;
@@ -1220,6 +1253,7 @@ namespace Owl
             public InputAction @Crouch => m_Wrapper.m_Gameplay_Crouch;
             public InputAction @Zoom => m_Wrapper.m_Gameplay_Zoom;
             public InputAction @Reload => m_Wrapper.m_Gameplay_Reload;
+            public InputAction @Aim => m_Wrapper.m_Gameplay_Aim;
             public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
             public void Enable() { Get().Enable(); }
             public void Disable() { Get().Disable(); }
@@ -1253,6 +1287,9 @@ namespace Owl
                 @Reload.started += instance.OnReload;
                 @Reload.performed += instance.OnReload;
                 @Reload.canceled += instance.OnReload;
+                @Aim.started += instance.OnAim;
+                @Aim.performed += instance.OnAim;
+                @Aim.canceled += instance.OnAim;
             }
 
             private void UnregisterCallbacks(IGameplayActions instance)
@@ -1281,6 +1318,9 @@ namespace Owl
                 @Reload.started -= instance.OnReload;
                 @Reload.performed -= instance.OnReload;
                 @Reload.canceled -= instance.OnReload;
+                @Aim.started -= instance.OnAim;
+                @Aim.performed -= instance.OnAim;
+                @Aim.canceled -= instance.OnAim;
             }
 
             public void RemoveCallbacks(IGameplayActions instance)
@@ -1529,6 +1569,7 @@ namespace Owl
             void OnCrouch(InputAction.CallbackContext context);
             void OnZoom(InputAction.CallbackContext context);
             void OnReload(InputAction.CallbackContext context);
+            void OnAim(InputAction.CallbackContext context);
         }
         public interface IUIActions
         {

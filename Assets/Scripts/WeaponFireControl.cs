@@ -19,27 +19,28 @@ namespace Owl
 		[SerializeField] private LayerMask _LayerMask;
 		[SerializeField] private Boolean _FullAuto;
 
-		[Header("Weapon Graphics")]
-		[SerializeField] private GameObject _MuzzleFlash;
+		[Header("Weapon Graphics")] [SerializeField]
+		private GameObject _MuzzleFlash;
 
 		[SerializeField] private GameObject _ImpactGraphic;
 
-		private Camera _Camera;
 		private InputAction.CallbackContext _FireCallback;
 		private Single _FireRate;
 		private Magazine _Magazine;
 		private Int32 _ShotsFired;
 		private Single _Timer;
 
+		/// <summary>
+		///    A <see cref="Action" /> that is invoked when the weapon is successfully fired.
+		/// </summary>
+		public Action WeaponFireAction;
+
 		private void Start()
 		{
 			//This is safe to do as there should only be one Magazine per weapon.
 			_Magazine = GetComponentInChildren<Magazine>();
-			_Camera = Camera.main;
 
-			const Single MINUTE_IN_SECONDS = 60;
-			Single rps = _Rpm / MINUTE_IN_SECONDS;
-			_FireRate = 1 / rps;
+			_FireRate = RpmToIntervalTime();
 		}
 
 		private void Update()
@@ -57,6 +58,9 @@ namespace Owl
 				if (!_FullAuto && _ShotsFired >= 1) return;
 
 				Vector3 barrelPoint = _Barrel.transform.position;
+
+				WeaponFireAction?.Invoke();
+
 				for (Int32 index = 0; index < _ShotsPerRound; index++)
 				{
 					//Spread
@@ -73,18 +77,16 @@ namespace Owl
 					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
 					damageable?.DamageTarget(_Damage);
 
-					if (_ImpactGraphic)
-					{
-						Quaternion rotation = Quaternion.LookRotation(hit.normal);
-						Instantiate(_ImpactGraphic, hit.point, rotation);
-					}
-				}
+					if (!_ImpactGraphic) continue;
 
+					Quaternion rotation = Quaternion.LookRotation(hit.normal);
+					Instantiate(_ImpactGraphic, hit.point, rotation);
+				}
 				if (_MuzzleFlash)
 				{
-					Instantiate(_MuzzleFlash, barrelPoint, Quaternion.identity, transform);
+					Quaternion rotation = Quaternion.LookRotation(_Barrel.transform.forward);
+					Instantiate(_MuzzleFlash, barrelPoint, rotation, _Barrel.transform);
 				}
-
 				_Timer = _FireRate;
 				_ShotsFired++;
 				_Magazine.AmmunitionCount--;
@@ -105,6 +107,13 @@ namespace Owl
 		{
 			PlayerInputHandler.WeaponFireAction -= context => _FireCallback = context;
 			PlayerInputHandler.WeaponReloadAction -= WeaponReload;
+		}
+
+		private Single RpmToIntervalTime()
+		{
+			const Single MINUTE_IN_SECONDS = 60;
+			Single rps = _Rpm / MINUTE_IN_SECONDS;
+			return 1 / rps;
 		}
 
 		private void WeaponReload()
