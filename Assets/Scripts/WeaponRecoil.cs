@@ -38,7 +38,7 @@ namespace Owl
 
 		private void FixedUpdate()
 		{
-			_RotationRecoil = Vector3.Lerp(_RecoilRotation, Vector3.zero, _RotationReturnSpeed * Time.deltaTime);
+			_RotationRecoil = Vector3.Lerp(_RotationRecoil, Vector3.zero, _RotationReturnSpeed * Time.deltaTime);
 			_MovementRecoil = Vector3.Lerp(_MovementRecoil, Vector3.zero, _MovementReturnSpeed * Time.deltaTime);
 
 			_RecoilTransform.localPosition = Vector3.Slerp(_RecoilTransform.localPosition, _MovementRecoil, _MovementRecoilSpeed * Time.fixedDeltaTime);
