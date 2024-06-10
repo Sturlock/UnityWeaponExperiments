@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Random = UnityEngine.Random;
 
 namespace Owl
 {
@@ -57,44 +56,59 @@ namespace Owl
 
 				if (!_FullAuto && _ShotsFired >= 1) return;
 
-				Vector3 barrelPoint = _Barrel.transform.position;
-
-				WeaponFireAction?.Invoke();
-
-				for (Int32 index = 0; index < _ShotsPerRound; index++)
-				{
-					//Spread
-					Single x = Random.Range(-_Spread, _Spread);
-					Single y = Random.Range(-_Spread, _Spread);
-
-					Vector3 direction = _Barrel.transform.forward + new Vector3(x, y, 0);
-
-					Ray shot = new(barrelPoint, direction);
-
-					if (!Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask)) continue;
-
-					Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
-					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
-					damageable?.DamageTarget(_Damage);
-
-					if (!_ImpactGraphic) continue;
-
-					Quaternion rotation = Quaternion.LookRotation(hit.normal);
-					Instantiate(_ImpactGraphic, hit.point, rotation);
-				}
-				if (_MuzzleFlash)
-				{
-					Quaternion rotation = Quaternion.LookRotation(_Barrel.transform.forward);
-					Instantiate(_MuzzleFlash, barrelPoint, rotation, _Barrel.transform);
-				}
-				_Timer = _FireRate;
-				_ShotsFired++;
-				_Magazine.AmmunitionCount--;
+				ShootWeapon();
 			}
 			else
 			{
 				_Timer -= Time.deltaTime;
 			}
+		}
+
+		private void ShootWeapon()
+		{
+			Vector3 barrelPoint = _Barrel.transform.position;
+
+			WeaponFireAction?.Invoke();
+
+			for (Int32 index = 0; index < _ShotsPerRound; index++)
+			{
+				//Spread
+				Single x = _Spread.Range();
+				Single y = _Spread.Range();
+
+				Vector3 direction = _Barrel.transform.forward + new Vector3(x, y, x);
+
+				Ray shot = new(barrelPoint, direction);
+
+				if (!Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask)) continue;
+
+				Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
+				IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
+				damageable?.DamageTarget(_Damage);
+
+				if (!_ImpactGraphic) continue;
+
+				CreateImpactPoint(hit);
+			}
+			if (_MuzzleFlash)
+			{
+				MuzzleFlash(barrelPoint);
+			}
+			_Timer = _FireRate;
+			_ShotsFired++;
+			_Magazine.AmmunitionCount--;
+		}
+
+		private void CreateImpactPoint(RaycastHit hit)
+		{
+			Quaternion rotation = Quaternion.LookRotation(hit.normal);
+			Instantiate(_ImpactGraphic, hit.point, rotation);
+		}
+
+		private void MuzzleFlash(Vector3 barrelPoint)
+		{
+			Quaternion rotation = Quaternion.LookRotation(_Barrel.transform.forward);
+			Instantiate(_MuzzleFlash, barrelPoint, rotation, _Barrel.transform);
 		}
 
 		private void OnEnable()
