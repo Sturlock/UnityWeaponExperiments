@@ -1,5 +1,6 @@
 ﻿using System;
 using Owl.Character.Player;
+using Owl.Raycast;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -81,9 +82,9 @@ namespace Owl.Weapon
 
 				Ray shot = new(barrelPoint, direction);
 
-				if (!Physics.Raycast(shot, out RaycastHit hit, Mathf.Infinity, _LayerMask)) continue;
+				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, 100, direction);
+				if (!CurvedRaycast.PerformCurvedRaycast(shotPath, out RaycastHit hit)) continue;
 
-				Debug.DrawRay(barrelPoint, shot.direction * 10, Color.magenta, 5f);
 				IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
 				damageable?.DamageTarget(_Damage);
 
