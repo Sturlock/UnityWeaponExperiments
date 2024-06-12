@@ -8,19 +8,22 @@ namespace Owl.Raycast
 		public static Int32 Resolution = 30;
 		public static Single Gravity = -9.81f;
 
-		public static Vector3[] CalculateParabolicPath(Vector3 startPosition, Single speed, Vector3 angle)
+		public static Vector3[] CalculateParabolicPath(Vector3 startPosition, Vector3 forwardDirection, Single speed, Vector3 angle)
 		{
 			Vector3[] points = new Vector3[Resolution];
-			Vector3 radianAngle = new(angle.x.Deg2Rad(), angle.y.Deg2Rad(), angle.z.Deg2Rad());
+
+			// Calculate the initial velocity vector
+			Vector3 initialVelocity = Quaternion.Euler(angle) * forwardDirection * speed;
 
 			for (Int32 index = 0; index < Resolution; index++)
 			{
-				Single normalizedTime = (Single)index / (Resolution - 1); // Normalized time (0 to 1)
-				Single x = speed * normalizedTime * Mathf.Cos(radianAngle.x) * Mathf.Cos(radianAngle.y);
-				Single y = speed * normalizedTime * Mathf.Sin(radianAngle.x) + 0.5f * Gravity * Mathf.Pow(normalizedTime, 2);
-				Single z = speed * normalizedTime * Mathf.Cos(radianAngle.x) * Mathf.Sin(radianAngle.y);
+				Single normalizedTime = (Single) index / (Resolution - 1); // Normalized time (0 to 1)
+				Single x = initialVelocity.x * normalizedTime;
+				Single y = initialVelocity.y * normalizedTime + 0.5f * Gravity * Mathf.Pow(normalizedTime, 2);
+				Single z = initialVelocity.z * normalizedTime;
 				points[index] = startPosition + new Vector3(x, y, z);
 			}
+
 			return points;
 		}
 

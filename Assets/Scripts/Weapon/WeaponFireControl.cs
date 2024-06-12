@@ -89,12 +89,9 @@ namespace Owl.Weapon
 				//Spread
 				Single x = _Spread.Range();
 				Single y = _Spread.Range();
+				Vector3 direction = _MuzzelPoint.transform.forward;
 
-				Vector3 direction = _MuzzelPoint.transform.forward + new Vector3(x, y, x);
-
-				Ray shot = new(barrelPoint, direction);
-
-				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, 100, direction);
+				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 100, new Vector3(x, y, x));
 				if (!CurvedRaycast.PerformCurvedRaycast(shotPath, out RaycastHit hit)) continue;
 
 				IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
