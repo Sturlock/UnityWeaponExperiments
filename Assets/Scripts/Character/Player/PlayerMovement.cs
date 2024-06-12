@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Owl
+namespace Owl.Character.Player
 {
 	/// <summary>
 	///    A class for handling the players movement mechanics.

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Owl
+namespace Owl.Weapon
 {
 	/// <summary>
 	///    A class for handling the functionality of a Magazine.

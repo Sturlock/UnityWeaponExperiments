@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Owl
+namespace Owl.Character.Enemies
 {
 	public class DummyTarget : MonoBehaviour, IDamageable, IHealth
 	{

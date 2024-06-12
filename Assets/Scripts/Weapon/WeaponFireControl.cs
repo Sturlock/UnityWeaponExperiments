@@ -1,8 +1,9 @@
 ﻿using System;
+using Owl.Character.Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Owl
+namespace Owl.Weapon
 {
 	/// <summary>
 	///    A class for handing how a weapon fires

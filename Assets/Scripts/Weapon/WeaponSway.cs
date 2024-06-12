@@ -1,7 +1,8 @@
 using System;
+using Owl.Character.Player;
 using UnityEngine;
 
-namespace Owl
+namespace Owl.Weapon
 {
 	public class WeaponSway : MonoBehaviour
 	{

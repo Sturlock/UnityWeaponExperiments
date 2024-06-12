@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Owl
+namespace Owl.Character.Player
 {
 	/// <summary>
 	///    A Singleton-based class that handles player inputs. Currently used for weapon control handling exclusively.

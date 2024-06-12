@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Owl
+namespace Owl.Character.Player
 {
 	/// <summary>
 	///    Handles how the user moves the player camera.
