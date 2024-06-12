@@ -16,7 +16,7 @@ namespace Owl.Weapon
 		[SerializeField] private Single _Damage;
 		[SerializeField] private Single _Spread;
 
-		[SerializeField] private GameObject _Barrel;
+		[SerializeField] private GameObject _MuzzelPoint;
 		[SerializeField] private LayerMask _LayerMask;
 		[SerializeField] private Boolean _FullAuto;
 
@@ -66,9 +66,21 @@ namespace Owl.Weapon
 			}
 		}
 
+		private void OnEnable()
+		{
+			PlayerInputHandler.WeaponFireAction += context => _FireCallback = context;
+			PlayerInputHandler.WeaponReloadAction += WeaponReload;
+		}
+
+		private void OnDisable()
+		{
+			PlayerInputHandler.WeaponFireAction -= context => _FireCallback = context;
+			PlayerInputHandler.WeaponReloadAction -= WeaponReload;
+		}
+
 		private void ShootWeapon()
 		{
-			Vector3 barrelPoint = _Barrel.transform.position;
+			Vector3 barrelPoint = _MuzzelPoint.transform.position;
 
 			WeaponFireAction?.Invoke();
 
@@ -78,7 +90,7 @@ namespace Owl.Weapon
 				Single x = _Spread.Range();
 				Single y = _Spread.Range();
 
-				Vector3 direction = _Barrel.transform.forward + new Vector3(x, y, x);
+				Vector3 direction = _MuzzelPoint.transform.forward + new Vector3(x, y, x);
 
 				Ray shot = new(barrelPoint, direction);
 
@@ -92,10 +104,12 @@ namespace Owl.Weapon
 
 				CreateImpactPoint(hit);
 			}
+
 			if (_MuzzleFlash)
 			{
 				MuzzleFlash(barrelPoint);
 			}
+
 			_Timer = _FireRate;
 			_ShotsFired++;
 			_Magazine.AmmunitionCount--;
@@ -109,20 +123,8 @@ namespace Owl.Weapon
 
 		private void MuzzleFlash(Vector3 barrelPoint)
 		{
-			Quaternion rotation = Quaternion.LookRotation(_Barrel.transform.forward);
-			Instantiate(_MuzzleFlash, barrelPoint, rotation, _Barrel.transform);
-		}
-
-		private void OnEnable()
-		{
-			PlayerInputHandler.WeaponFireAction += context => _FireCallback = context;
-			PlayerInputHandler.WeaponReloadAction += WeaponReload;
-		}
-
-		private void OnDisable()
-		{
-			PlayerInputHandler.WeaponFireAction -= context => _FireCallback = context;
-			PlayerInputHandler.WeaponReloadAction -= WeaponReload;
+			Quaternion rotation = Quaternion.LookRotation(_MuzzelPoint.transform.forward);
+			Instantiate(_MuzzleFlash, barrelPoint, rotation, _MuzzelPoint.transform);
 		}
 
 		private Single RpmToIntervalTime()
