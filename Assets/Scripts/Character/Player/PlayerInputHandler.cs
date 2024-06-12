@@ -74,6 +74,7 @@ namespace Owl.Character.Player
 
 		private void Update()
 		{
+			if (Controls == null) return;
 			PlayerMovement = Controls.Gameplay.Move.ReadValue<Vector2>();
 			PlayerLook = Controls.Gameplay.Look.ReadValue<Vector2>();
 		}
