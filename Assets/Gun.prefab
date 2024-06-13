@@ -54,13 +54,14 @@ MonoBehaviour:
   _ShotsPerRound: 1
   _Damage: 10
   _Spread: 0.1
-  _Barrel: {fileID: 5528908268222033509}
+  _MuzzelPoint: {fileID: 5528908268222033509}
   _LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
   _FullAuto: 1
   _MuzzleFlash: {fileID: 100000, guid: 8eaaa4f553116f44b8459bc24201c514, type: 3}
   _ImpactGraphic: {fileID: 100006, guid: 9e95c7b2183a4f345aaf86846f8f1918, type: 3}
+  _BulletPrefab: {fileID: 8062524042087917391, guid: 2fb36075713d34345ba3e0c060728e79, type: 3}
 --- !u!1001 &3020925667890550059
 PrefabInstance:
   m_ObjectHideFlags: 0

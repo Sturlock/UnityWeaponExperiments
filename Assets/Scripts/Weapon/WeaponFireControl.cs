@@ -4,8 +4,6 @@ using Owl.Character.Player;
 using Owl.Raycast;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
-using Object = System.Object;
 
 namespace Owl.Weapon
 {
@@ -27,6 +25,7 @@ namespace Owl.Weapon
 		private GameObject _MuzzleFlash;
 
 		[SerializeField] private GameObject _ImpactGraphic;
+		[SerializeField] private GameObject _BulletPrefab;
 
 		private InputAction.CallbackContext _FireCallback;
 		private Single _FireRate;
@@ -97,16 +96,23 @@ namespace Owl.Weapon
 				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x));
 
 				Single travelTime = CalculateTravelTime(shotPath, 975);
-				StartCoroutine(LerpAlongPath(travelTime, shotPath));
 
-				if (!CurvedRaycast.PerformCurvedRaycast(shotPath, out RaycastHit hit)) continue;
+				Boolean hitObject = CurvedRaycast.PerformCurvedRaycast(shotPath, out RaycastHit hit);
 
-				IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
-				damageable?.DamageTarget(_Damage);
+				if (hitObject)
+				{
+					StartCoroutine(LerpAlongPath(travelTime, shotPath, hit.point));
+					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
+					damageable?.DamageTarget(_Damage);
 
-				if (!_ImpactGraphic) continue;
+					if (!_ImpactGraphic) continue;
 
-				CreateImpactPoint(hit);
+					CreateImpactPoint(hit);
+				}
+				else
+				{
+					StartCoroutine(LerpAlongPath(travelTime, shotPath));
+				}
 			}
 
 			if (_MuzzleFlash)
@@ -131,27 +137,40 @@ namespace Owl.Weapon
 			return totalDistance / speed;
 		}
 
-		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path)
+		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path, Vector3 hitPoint = default)
 		{
-			GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-			Destroy(primitive.GetComponent<SphereCollider>());
+			if (!_BulletPrefab) yield break;
+
+			GameObject bullet = Instantiate(_BulletPrefab, _MuzzelPoint.transform.position, Quaternion.identity);
 			Single segmentDuration = travelTime / (path.Length - 1);
+
 			for (Int32 i = 0; i < path.Length - 1; i++)
 			{
 				Vector3 startPoint = path[i];
 				Vector3 endPoint = path[i + 1];
 				Single timeElapsed = 0f;
 
+				Boolean targetHit = false;
 				while (timeElapsed < segmentDuration)
 				{
-					primitive.transform.position = Vector3.Lerp(startPoint, endPoint, timeElapsed / segmentDuration);
+					bullet.transform.position = Vector3.Lerp(startPoint, endPoint, timeElapsed / segmentDuration);
 					timeElapsed += Time.deltaTime;
+					if (Vector3.Distance(bullet.transform.position, hitPoint) <= 3)
+					{
+						targetHit = true;
+						bullet.transform.position = hitPoint;
+						break;
+					}
+
 					yield return null;
 				}
 
-				primitive.transform.position = endPoint;
+				if (targetHit) break;
+
+				bullet.transform.position = endPoint;
 			}
-			Destroy(primitive);
+
+			Destroy(bullet);
 		}
 
 		private void CreateImpactPoint(RaycastHit hit)
