@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using Owl.Character.Player;
 using Owl.Raycast;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+using Object = System.Object;
 
 namespace Owl.Weapon
 {
@@ -91,7 +94,11 @@ namespace Owl.Weapon
 				Single y = _Spread.Range();
 				Vector3 direction = _MuzzelPoint.transform.forward;
 
-				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 100, new Vector3(x, y, x));
+				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x));
+
+				Single travelTime = CalculateTravelTime(shotPath, 975);
+				StartCoroutine(LerpAlongPath(travelTime, shotPath));
+
 				if (!CurvedRaycast.PerformCurvedRaycast(shotPath, out RaycastHit hit)) continue;
 
 				IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
@@ -110,6 +117,41 @@ namespace Owl.Weapon
 			_Timer = _FireRate;
 			_ShotsFired++;
 			_Magazine.AmmunitionCount--;
+		}
+
+		private Single CalculateTravelTime(Vector3[] path, Single speed)
+		{
+			Single totalDistance = 0f;
+
+			for (Int32 i = 0; i < path.Length - 1; i++)
+			{
+				totalDistance += Vector3.Distance(path[i], path[i + 1]);
+			}
+
+			return totalDistance / speed;
+		}
+
+		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path)
+		{
+			GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			Destroy(primitive.GetComponent<SphereCollider>());
+			Single segmentDuration = travelTime / (path.Length - 1);
+			for (Int32 i = 0; i < path.Length - 1; i++)
+			{
+				Vector3 startPoint = path[i];
+				Vector3 endPoint = path[i + 1];
+				Single timeElapsed = 0f;
+
+				while (timeElapsed < segmentDuration)
+				{
+					primitive.transform.position = Vector3.Lerp(startPoint, endPoint, timeElapsed / segmentDuration);
+					timeElapsed += Time.deltaTime;
+					yield return null;
+				}
+
+				primitive.transform.position = endPoint;
+			}
+			Destroy(primitive);
 		}
 
 		private void CreateImpactPoint(RaycastHit hit)
