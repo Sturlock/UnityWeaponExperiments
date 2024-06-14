@@ -94,7 +94,7 @@ namespace Owl.Weapon
 				Single y = _Spread.Range();
 				Vector3 direction = _MuzzlePoint.transform.forward;
 
-				(Vector3[] shotPath, RaycastHit? raycastHit) = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x), 10000);
+				(Vector3[] shotPath, RaycastHit? raycastHit) = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x), 10000, _BulletMask);
 
 				for (Int32 i = 0; i < shotPath.Length - 1; i++)
 				{
@@ -107,14 +107,7 @@ namespace Owl.Weapon
 				{
 					RaycastHit hit = (RaycastHit) raycastHit;
 
-					StartCoroutine(LerpAlongPath(travelTime, shotPath, hit.point));
-
-					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
-					damageable?.DamageTarget(_Damage);
-
-					if (!_ImpactGraphic) continue;
-
-					CreateImpactPoint(hit);
+					StartCoroutine(LerpAlongPath(travelTime, shotPath, hit));
 				}
 				else
 				{
@@ -144,7 +137,7 @@ namespace Owl.Weapon
 			return totalDistance / speed;
 		}
 
-		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path, Vector3 hitPoint = default)
+		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path, RaycastHit hit = default)
 		{
 			if (!_BulletPrefab) yield break;
 
@@ -161,14 +154,19 @@ namespace Owl.Weapon
 				while (timeElapsed < segmentDuration)
 				{
 					bullet.transform.position = Vector3.Lerp(startPoint, endPoint, timeElapsed / segmentDuration);
-					timeElapsed += Time.deltaTime;
-					if (Vector3.Distance(bullet.transform.position, hitPoint) <= 3)
+					if (Vector3.Distance(bullet.transform.position, hit.point) <= 3)
 					{
 						targetHit = true;
-						bullet.transform.position = hitPoint;
+						bullet.transform.position = hit.point;
+
+						DamageTarget(hit);
+
+						if (!_ImpactGraphic) break;
+
+						CreateImpactPoint(hit);
 						break;
 					}
-
+					timeElapsed += Time.deltaTime;
 					yield return null;
 				}
 
@@ -178,6 +176,12 @@ namespace Owl.Weapon
 			}
 
 			Destroy(bullet);
+		}
+
+		private void DamageTarget(RaycastHit hit)
+		{
+			IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
+			damageable?.DamageTarget(_Damage);
 		}
 
 		private void CreateImpactPoint(RaycastHit hit)

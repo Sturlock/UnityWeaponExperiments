@@ -4,6 +4,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
+
 namespace Owl.Raycast
 {
 	public class CurvedRaycast : MonoBehaviour
@@ -11,7 +12,7 @@ namespace Owl.Raycast
 		private const Single GRAVITY = -9.81f;
 		private const Single POINT_SPACING = 50f; // The distance between each calculated point along the path
 
-		public static (Vector3[] path, RaycastHit? hit) CalculateParabolicPath(Vector3 startPosition, Vector3 forwardDirection, Single speed, Vector3 angle, Single maxDistance)
+		public static (Vector3[] path, RaycastHit? hit) CalculateParabolicPath(Vector3 startPosition, Vector3 forwardDirection, Single speed, Vector3 angle, Single maxDistance, LayerMask layerMask)
 		{
 			NativeList<Vector3> path = new(Allocator.TempJob);
 
@@ -31,9 +32,9 @@ namespace Owl.Raycast
 			handle.Complete();
 
 			List<Vector3> pathList = new(path.Length);
-			for (Int32 i = 0; i < path.Length; i++)
+			foreach (Vector3 item in path)
 			{
-				pathList.Add(path[i]);
+				pathList.Add(item);
 			}
 
 
