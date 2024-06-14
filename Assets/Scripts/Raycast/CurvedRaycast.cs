@@ -43,7 +43,7 @@ namespace Owl.Raycast
 			{
 				Vector3 start = pathList[i];
 				Vector3 end = pathList[i + 1];
-				if (!Physics.Raycast(start, end - start, out RaycastHit hitInfo, Vector3.Distance(start, end))) continue;
+				if (!Physics.Raycast(start, end - start, out RaycastHit hitInfo, Vector3.Distance(start, end), layerMask)) continue;
 
 				hit = hitInfo;
 				pathList = pathList.GetRange(0, i + 2); // Trim the path up to the hit point
