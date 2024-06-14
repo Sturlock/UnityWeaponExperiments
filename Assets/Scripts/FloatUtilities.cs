@@ -10,10 +10,5 @@ namespace Owl
 		{
 			return Random.Range(-single, single);
 		}
-
-		public static Single Deg2Rad(this Single single)
-		{
-			return Mathf.Deg2Rad * single;
-		}
 	}
 }
