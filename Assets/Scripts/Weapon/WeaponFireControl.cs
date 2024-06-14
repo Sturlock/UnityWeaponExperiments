@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Owl.Character.Player;
 using Owl.Raycast;
 using UnityEngine;
@@ -17,8 +18,7 @@ namespace Owl.Weapon
 		[SerializeField] private Single _Damage;
 		[SerializeField] private Single _Spread;
 
-		[SerializeField] private GameObject _MuzzelPoint;
-		[SerializeField] private LayerMask _LayerMask;
+		[SerializeField] private GameObject _MuzzlePoint;
 		[SerializeField] private Boolean _FullAuto;
 
 		[Header("Weapon Graphics")] [SerializeField]
@@ -82,7 +82,7 @@ namespace Owl.Weapon
 
 		private void ShootWeapon()
 		{
-			Vector3 barrelPoint = _MuzzelPoint.transform.position;
+			Vector3 barrelPoint = _MuzzlePoint.transform.position;
 
 			WeaponFireAction?.Invoke();
 
@@ -91,7 +91,7 @@ namespace Owl.Weapon
 				//Spread
 				Single x = _Spread.Range();
 				Single y = _Spread.Range();
-				Vector3 direction = _MuzzelPoint.transform.forward;
+				Vector3 direction = _MuzzlePoint.transform.forward;
 
 				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x));
 
@@ -125,7 +125,7 @@ namespace Owl.Weapon
 			_Magazine.AmmunitionCount--;
 		}
 
-		private Single CalculateTravelTime(Vector3[] path, Single speed)
+		private static Single CalculateTravelTime(Vector3[] path, Single speed)
 		{
 			Single totalDistance = 0f;
 
@@ -141,7 +141,7 @@ namespace Owl.Weapon
 		{
 			if (!_BulletPrefab) yield break;
 
-			GameObject bullet = Instantiate(_BulletPrefab, _MuzzelPoint.transform.position, Quaternion.identity);
+			GameObject bullet = Instantiate(_BulletPrefab, _MuzzlePoint.transform.position, Quaternion.identity);
 			Single segmentDuration = travelTime / (path.Length - 1);
 
 			for (Int32 i = 0; i < path.Length - 1; i++)
@@ -181,8 +181,8 @@ namespace Owl.Weapon
 
 		private void MuzzleFlash(Vector3 barrelPoint)
 		{
-			Quaternion rotation = Quaternion.LookRotation(_MuzzelPoint.transform.forward);
-			Instantiate(_MuzzleFlash, barrelPoint, rotation, _MuzzelPoint.transform);
+			Quaternion rotation = Quaternion.LookRotation(_MuzzlePoint.transform.forward);
+			Instantiate(_MuzzleFlash, barrelPoint, rotation, _MuzzlePoint.transform);
 		}
 
 		private Single RpmToIntervalTime()
