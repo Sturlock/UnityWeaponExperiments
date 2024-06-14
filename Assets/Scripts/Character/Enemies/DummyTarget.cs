@@ -7,12 +7,6 @@ namespace Owl.Character.Enemies
 	{
 		[SerializeField] private Single _Health;
 
-		// Start is called before the first frame update
-		private void Start()
-		{
-			_Health = Mathf.Infinity;
-		}
-
 		/// <inheritdoc />
 		public void DamageTarget(Single value)
 		{
@@ -30,6 +24,10 @@ namespace Owl.Character.Enemies
 		public void DecreaseHealth(Single value)
 		{
 			_Health -= value;
+		}
+
+		private void Update()
+		{
 			if (_Health <= 0)
 			{
 				OnDeath();
@@ -39,7 +37,7 @@ namespace Owl.Character.Enemies
 		/// <inheritdoc />
 		public void OnDeath()
 		{
-			Destroy(this, 1f);
+			Destroy(gameObject, 1f);
 		}
 	}
 }
