@@ -1,70 +1,101 @@
 using System;
 using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
-
 namespace Owl.Raycast
 {
 	public class CurvedRaycast : MonoBehaviour
 	{
-		private const Int32 RESOLUTION = 50;
 		private const Single GRAVITY = -9.81f;
+		private const Single POINT_SPACING = 50f; // The distance between each calculated point along the path
 
-		public static Vector3[] CalculateParabolicPath(Vector3 startPosition, Vector3 forwardDirection, Single speed, Vector3 angle)
+		public static (Vector3[] path, RaycastHit? hit) CalculateParabolicPath(Vector3 startPosition, Vector3 forwardDirection, Single speed, Vector3 angle, Single maxDistance)
 		{
-			List<Vector3> points = new List<Vector3>();
-			Vector3 currentPosition = startPosition;
+			NativeList<Vector3> path = new(Allocator.TempJob);
 
-			// Calculate the initial velocity vector
-			Vector3 initialVelocity = Quaternion.Euler(angle) * forwardDirection * speed;
+			CalculateParabolicPathJob job = new()
+			{
+				StartPosition = startPosition,
+				ForwardDirection = forwardDirection,
+				Speed = speed,
+				Angle = angle,
+				Gravity = GRAVITY,
+				PointSpacing = POINT_SPACING,
+				MaxDistance = maxDistance,
+				Path = path
+			};
 
-			Single timeStep = RESOLUTION / speed;
+			JobHandle handle = job.Schedule();
+			handle.Complete();
+
+			List<Vector3> pathList = new(path.Length);
+			for (Int32 i = 0; i < path.Length; i++)
+			{
+				pathList.Add(path[i]);
+			}
+
+
+			RaycastHit? hit = null;
+			for (Int32 i = 0; i < pathList.Count - 1; i++)
+			{
+				Vector3 start = pathList[i];
+				Vector3 end = pathList[i + 1];
+				if (!Physics.Raycast(start, end - start, out RaycastHit hitInfo, Vector3.Distance(start, end))) continue;
+
+				hit = hitInfo;
+				pathList = pathList.GetRange(0, i + 2); // Trim the path up to the hit point
+				pathList[pathList.Count - 1] = hitInfo.point; // Replace last point with the hit point
+				break;
+			}
+
+			path.Dispose();
+
+			return (pathList.ToArray(), hit);
+		}
+	}
+
+	[BurstCompile]
+	public struct CalculateParabolicPathJob : IJob
+	{
+		public Vector3 StartPosition;
+		public Vector3 ForwardDirection;
+		public Single Speed;
+		public Vector3 Angle;
+		public Single Gravity;
+		public Single PointSpacing;
+		public Single MaxDistance;
+
+		public NativeList<Vector3> Path;
+
+		public void Execute()
+		{
+			Vector3 currentPosition = StartPosition;
+			Vector3 initialVelocity = Quaternion.Euler(Angle) * ForwardDirection * Speed;
+
+			Single timeStep = PointSpacing / Speed;
 			Single time = 0f;
-			points.Add(currentPosition);
+			Path.Add(currentPosition);
 
-			while (true)
+			Single totalDistance = 0f;
+
+			while (totalDistance <= MaxDistance)
 			{
 				time += timeStep;
 				Single x = initialVelocity.x * time;
-				Single y = initialVelocity.y * time + 0.5f * GRAVITY * Mathf.Pow(time, 2);
+				Single y = initialVelocity.y * time + 0.5f * Gravity * Mathf.Pow(time, 2);
 				Single z = initialVelocity.z * time;
-				Vector3 nextPosition = startPosition + new Vector3(x, y, z);
+				Vector3 nextPosition = StartPosition + new Vector3(x, y, z);
 
-				// Perform a raycast between the current position and the next position
-				if (Physics.Raycast(currentPosition, nextPosition - currentPosition, out RaycastHit hit, Vector3.Distance(currentPosition, nextPosition)))
-				{
-					points.Add(hit.point);
-					Debug.Log("Hit: " + hit.collider.name);
-					break; // Stop calculation after a hit
-				}
+				Single segmentDistance = Vector3.Distance(currentPosition, nextPosition);
+				totalDistance += segmentDistance;
 
-				points.Add(nextPosition);
+				Path.Add(nextPosition);
 				currentPosition = nextPosition;
 			}
-
-			return points.ToArray();
-		}
-
-
-		public static Boolean PerformCurvedRaycast(Vector3[] path, out RaycastHit hit)
-		{
-			hit = default;
-			for (Int32 i = 0; i < path.Length - 1; i++)
-			{
-				Debug.DrawLine(path[i], path[i + 1], Color.magenta, 5f);
-			}
-
-			for (Int32 i = 0; i < path.Length - 1; i++)
-			{
-				Vector3 start = path[i];
-				Vector3 end = path[i + 1];
-
-				if (Physics.Raycast(start, end - start, out hit, Vector3.Distance(start, end)))
-				{
-					return true; // Stop raycasting after a hit
-				}
-			}
-
-			return false;
 		}
 	}
+
+
 }

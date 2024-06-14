@@ -19,6 +19,7 @@ namespace Owl.Weapon
 		[SerializeField] private Single _Spread;
 
 		[SerializeField] private GameObject _MuzzlePoint;
+		[SerializeField] private LayerMask _BulletMask;
 		[SerializeField] private Boolean _FullAuto;
 
 		[Header("Weapon Graphics")] [SerializeField]
@@ -93,15 +94,21 @@ namespace Owl.Weapon
 				Single y = _Spread.Range();
 				Vector3 direction = _MuzzlePoint.transform.forward;
 
-				Vector3[] shotPath = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x));
+				(Vector3[] shotPath, RaycastHit? raycastHit) = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x), 10000);
+
+				for (Int32 i = 0; i < shotPath.Length - 1; i++)
+				{
+					Debug.DrawLine(shotPath[i], shotPath[i + 1], Color.magenta, 5f);
+				}
 
 				Single travelTime = CalculateTravelTime(shotPath, 975);
 
-				Boolean hitObject = CurvedRaycast.PerformCurvedRaycast(shotPath, out RaycastHit hit);
-
-				if (hitObject)
+				if (raycastHit is not null)
 				{
+					RaycastHit hit = (RaycastHit) raycastHit;
+
 					StartCoroutine(LerpAlongPath(travelTime, shotPath, hit.point));
+
 					IDamageable damageable = hit.transform.gameObject.GetComponent<IDamageable>();
 					damageable?.DamageTarget(_Damage);
 
