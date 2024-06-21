@@ -1,0 +1,88 @@
+﻿name: Unity Pipeline
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event_name}}-${{github.ref_name}}
+    cancel-in-progress: true
+
+on: 
+    pull_request: 
+        types:
+            - synchronize
+            - opened
+    workflow_dispatch: {}
+
+env:
+ PROJECT_PATH: StupidWhiteDog_Game
+ UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+ UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+ UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+ TARGET_PLATFORM: StandaloneWindows64 # Build a Windows 64-bit standalone.
+
+jobs:
+# Build Game For Windows
+  BuildForWindows:
+    timeout-minutes: 90
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    name: Build Unity for Windows
+    runs-on: ubuntu-latest
+    needs: [testRunnerInAll]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+# LFS
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Restore LFS cache
+        uses: actions/cache@v3
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS Pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+# Restore Library cache 
+      - name: Restore Library cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.PROJECT_PATH }}/Library
+          key: Library-{{ env.PROJECT_PATH }}
+          restore-keys: |
+            Library-{{ env.PROJECT_PATH }}-
+            Library-
+
+# Restore Build cache 
+      - name: Restore Build cache
+        uses: actions/cache@v3
+        with:
+          path: build
+          key: Build-{{ env.PROJECT_PATH }}
+          restore-keys: |
+            Build-{{ env.PROJECT_PATH }}-
+            Build-
+
+# Builder
+      - name: Unity Builder - ${{ env.PROJECT_PATH }} (${{ env.TARGET_PLATFORM }})
+        id: unityBuilder
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ env.UNITY_LICENSE }}
+        with:    
+          projectPath: ${{ env.PROJECT_PATH }}
+          targetPlatform: ${{ env.TARGET_PLATFORM }}
+          versioning: Semantic
+
+      - run: |
+          echo 'Project Version: ${{ steps.unityBuilder.outputs.buildVersion }}' 
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{env.PROJECT_PATH}} - ${{ steps.unityBuilder.outputs.buildVersion }} ${{ steps.date.outputs.date }} (${{ env.TARGET_PLATFORM }})
+          path: build/${{ env.TARGET_PLATFORM }}
