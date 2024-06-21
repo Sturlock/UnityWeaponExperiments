@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Owl.Character.Player;
 using Owl.Raycast;
 using UnityEngine;
@@ -15,6 +14,7 @@ namespace Owl.Weapon
 	{
 		[SerializeField] private Single _Rpm = 120;
 		[SerializeField, Range(1, 100)] private Int32 _ShotsPerRound;
+		[SerializeField] private Single _Velocity = 975;
 		[SerializeField] private Single _Damage;
 		[SerializeField] private Single _Spread;
 
@@ -94,20 +94,25 @@ namespace Owl.Weapon
 				Single y = _Spread.Range();
 				Vector3 direction = _MuzzlePoint.transform.forward;
 
-				(Vector3[] shotPath, RaycastHit? raycastHit) = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, 975, new Vector3(x, y, x), 10000, _BulletMask);
+				(Vector3[] shotPath, RaycastHit? raycastHit) = CurvedRaycast.CalculateParabolicPath(barrelPoint, direction, _Velocity, new Vector3(x, y, x), 10000, _BulletMask);
 
+				// Calculate the travel time and start lerping
+				Single travelTime = CalculateTravelTime(shotPath, _Velocity);
 				for (Int32 i = 0; i < shotPath.Length - 1; i++)
 				{
-					Debug.DrawLine(shotPath[i], shotPath[i + 1], Color.magenta, 5f);
+					Debug.DrawLine(shotPath[i], shotPath[i + 1], Color.magenta, 1f);
 				}
-
-				Single travelTime = CalculateTravelTime(shotPath, 975);
-
 				if (raycastHit is not null)
 				{
 					RaycastHit hit = (RaycastHit) raycastHit;
 
-					StartCoroutine(LerpAlongPath(travelTime, shotPath, hit));
+					StartCoroutine(LerpAlongPath(travelTime, shotPath));
+
+					DamageTarget(hit);
+
+					if (!_ImpactGraphic) continue;
+
+					CreateImpactPoint(hit);
 				}
 				else
 				{
@@ -134,15 +139,18 @@ namespace Owl.Weapon
 				totalDistance += Vector3.Distance(path[i], path[i + 1]);
 			}
 
+			Debug.Log($"Distance is: {totalDistance}. Speed is: {speed}. Travel Time is:{totalDistance / speed}");
 			return totalDistance / speed;
 		}
 
-		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path, RaycastHit hit = default)
+		private IEnumerator LerpAlongPath(Single travelTime, Vector3[] path)
 		{
 			if (!_BulletPrefab) yield break;
 
 			GameObject bullet = Instantiate(_BulletPrefab, _MuzzlePoint.transform.position, Quaternion.identity);
+
 			Single segmentDuration = travelTime / (path.Length - 1);
+			Debug.Log("Segment Duration: " + segmentDuration);
 
 			for (Int32 i = 0; i < path.Length - 1; i++)
 			{
@@ -150,27 +158,13 @@ namespace Owl.Weapon
 				Vector3 endPoint = path[i + 1];
 				Single timeElapsed = 0f;
 
-				Boolean targetHit = false;
 				while (timeElapsed < segmentDuration)
 				{
-					bullet.transform.position = Vector3.Lerp(startPoint, endPoint, timeElapsed / segmentDuration);
-					if (Vector3.Distance(bullet.transform.position, hit.point) <= 3)
-					{
-						targetHit = true;
-						bullet.transform.position = hit.point;
-
-						DamageTarget(hit);
-
-						if (!_ImpactGraphic) break;
-
-						CreateImpactPoint(hit);
-						break;
-					}
+					Single fractionOfJourney = timeElapsed / segmentDuration;
+					bullet.transform.position = Vector3.Lerp(startPoint, endPoint, fractionOfJourney);
 					timeElapsed += Time.deltaTime;
 					yield return null;
 				}
-
-				if (targetHit) break;
 
 				bullet.transform.position = endPoint;
 			}

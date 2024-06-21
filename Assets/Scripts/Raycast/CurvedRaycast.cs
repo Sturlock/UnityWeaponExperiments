@@ -10,7 +10,7 @@ namespace Owl.Raycast
 	public class CurvedRaycast : MonoBehaviour
 	{
 		private const Single GRAVITY = -9.81f;
-		private const Single POINT_SPACING = 50f; // The distance between each calculated point along the path
+		private const Single POINT_SPACING = 1f; // The distance between each calculated point along the path
 
 		public static (Vector3[] path, RaycastHit? hit) CalculateParabolicPath(Vector3 startPosition, Vector3 forwardDirection, Single speed, Vector3 angle, Single maxDistance, LayerMask layerMask)
 		{
