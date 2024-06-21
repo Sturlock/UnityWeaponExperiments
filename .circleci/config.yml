@@ -1,3 +1,19 @@
 ﻿version: 2.1
 orbs:
   unity: game-ci/unity@1.7.0
+
+workflows:
+  build-unity-project:
+    jobs:
+      - unity/build:
+          name: 'build-Windows64-il2cpp'
+          step-name: 'Build StandaloneWindows64 il2cpp'
+          compress: true
+          executor:
+            name: 'unity/windows-2019'
+            size: 'large'
+            editor_version: '2021.3.2f1'
+            target_platform: 'windows-il2cpp'
+          build-target: StandaloneWindows64
+          compress: true
+          context: 'Night Owl Games'
