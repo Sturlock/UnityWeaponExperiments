@@ -22,10 +22,8 @@ jobs:
 # Build Game For Windows
   BuildForWindows:
     timeout-minutes: 90
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     name: Build Unity for Windows
     runs-on: ubuntu-latest
-    needs: [testRunnerInAll]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
