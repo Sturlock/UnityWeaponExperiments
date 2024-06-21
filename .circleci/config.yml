@@ -6,7 +6,6 @@ workflows:
   build-unity-project:
     jobs:
       - unity/build:
-          name: 'build-Windows64-il2cpp'
           step-name: 'Build StandaloneWindows64 il2cpp'
           compress: true
           executor:
