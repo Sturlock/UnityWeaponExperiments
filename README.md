@@ -7,7 +7,9 @@ This is a project where I experiment with different weapon mechanics, starting a
 - Deterministic non-physics based bullet drop (Curved Ray-casting)
   - Bullet Travel
 - Aim Down Sight
-- 
+- Designer-friendly reload configurations
+- Custom Inspector windows
+- Tooling to set up a weapon rig
 
 ## Completed Features
 - Shooting
@@ -15,3 +17,6 @@ This is a project where I experiment with different weapon mechanics, starting a
 - Semi-Automatic and Automatic fire
 - Recoil
 - Weapon Sway
+
+## Interesting Derivatives
+- Have ray-casts return hit damageable components
