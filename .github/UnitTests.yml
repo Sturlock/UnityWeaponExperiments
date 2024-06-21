@@ -1,4 +1,6 @@
-﻿concurrency:
+﻿name: Unit Test Unity
+
+concurrency:
   group: ${{ github.workflow }}-${{ github.event_name}}-${{github.ref_name}}
   cancel-in-progress: true
 

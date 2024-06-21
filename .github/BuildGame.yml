@@ -1,4 +1,4 @@
-﻿name: Unity Pipeline
+﻿name: Build Unity
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.event_name}}-${{github.ref_name}}
