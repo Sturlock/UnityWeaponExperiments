@@ -82,5 +82,5 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{env.PROJECT_PATH}} - ${{ steps.unityBuilder.outputs.buildVersion }} ${{ steps.date.outputs.date }} (${{ env.TARGET_PLATFORM }})
+          name: ${{ steps.unityBuilder.outputs.buildVersion }} ${{ steps.date.outputs.date }} (${{ env.TARGET_PLATFORM }})
           path: build/${{ env.TARGET_PLATFORM }}
