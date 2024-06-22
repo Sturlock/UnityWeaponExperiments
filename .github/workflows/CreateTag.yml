@@ -6,7 +6,7 @@ on:
   - workflow_call
 
 jobs:
-  increment-version:
+  CreateTag:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,6 +20,6 @@ jobs:
       - name: Get current version from CHANGELOG.md
         id: get_version
         run: |
-          VERSION=$(grep -oP '(?<=^## \[)\d+\.\d+\.\d+(?=\])' CHANGELOG.md | head -n 1)
+          VERSION=$(grep -oP '(?<=^## )\d+\.\d+\.\d+' CHANGELOG.md | head -n 1)
           echo "Current version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
