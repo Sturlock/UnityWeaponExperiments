@@ -4,7 +4,7 @@ orbs:
   unity: game-ci/unity@1.7.0
 
 jobs:
-  UnityBuildGame:
+  unityBuildGame:
     - unity/build:
         name: 'build-Windows64-il2cpp'
         step-name: 'Build StandaloneWindows64 il2cpp'

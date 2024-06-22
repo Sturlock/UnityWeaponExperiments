@@ -1,5 +1,5 @@
 ﻿version: 2.1
-
+setup: true
 import:
   - "jobs/UnityBuildGame.yml"
   - "jobs/UnityActivation.yml"
@@ -10,7 +10,7 @@ orbs:
 workflows:
   Unity-Build-Game:
     jobs:
-      - UnityBuildGame
+      - unityBuildGame
   Get-Unity-License:
     jobs:
-      - UnityActivation
+      - unityActivation
