@@ -10,8 +10,7 @@ workflows:
     jobs:
       - unity/create-activation-file:
           editor_version: 2022.3.16f1
-  Build:
-    jobs:
+
       - unity/build:
           name: 'build-Windows64-il2cpp'
           step-name: 'Build StandaloneWindows64 il2cpp'
