@@ -1,0 +1,15 @@
+name: "Prepare for Develop"
+
+on:
+  pull_request: 
+    types:
+      - synchronize
+      - opened
+
+jobs:
+  unit-tests:
+    uses: ./.github/workflows/UnitTests.yml
+
+  build-project:
+    uses: ./.github/workflows/BuildGame.yml
+    needs: unit-tests

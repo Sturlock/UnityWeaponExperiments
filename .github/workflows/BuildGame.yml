@@ -5,11 +5,12 @@ concurrency:
     cancel-in-progress: true
 
 on: 
-    pull_request: 
-        types:
-            - synchronize
-            - opened
+    #pull_request: 
+    #    types:
+    #        - synchronize
+    #        - opened
     workflow_dispatch: {}
+    workflow_call: {}
 
 env:
  PROJECT_PATH: ./
