@@ -1,6 +1,7 @@
 name: Make Version Tag
 
 on:
+  - push
   - workflow_dispatch
   - workflow_call
 
