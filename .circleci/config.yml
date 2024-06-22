@@ -17,7 +17,7 @@ workflows:
           unity-username-var-name: 'UNITY_USERNAME'
           unity-password-var-name: 'UNITY_PASSWORD'
           executor:
-            name: 'unity/windows-2019'
+            name: 'unity/windows-2022'
             size: 'large'
             editor_version: 2022.3.16f1
             target_platform: 'windows-il2cpp'
