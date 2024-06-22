@@ -1,0 +1,17 @@
+name: "Prepare for Develop"
+
+on:
+  pull_request: 
+    types:
+      - synchronize
+      - opened
+
+jobs:
+  unit-tests:
+    uses: ./.github/workflows/UnitTests.yml
+    secrets: inherit 
+
+  build-project:
+    needs: unit-tests
+    uses: ./.github/workflows/BuildGame.yml
+    secrets: inherit

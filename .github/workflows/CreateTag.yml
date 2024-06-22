@@ -1,0 +1,31 @@
+name: Make Version Tag
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  CreateTag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+
+      - name: Get current version from CHANGELOG.md
+        id: get_version
+        run: |
+          VERSION=$(grep -oP '(?<=^## )\d+\.\d+\.\d+' CHANGELOG.md | head -n 1)
+          echo "Current version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Create a new tag
+        run: |
+          NEW_VERSION=${{ env.version }}
+          git tag "v$NEW_VERSION"
+          git push origin "v$NEW_VERSION"
