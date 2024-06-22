@@ -11,11 +11,8 @@ on:
       - master
       - 'CICD/**'
       - '[Aa]rt/**'
-  pull_request:
-    types:
-      - synchronize
-      - opened
   workflow_dispatch: {}
+  workflow_call: {}
 
 env:
   PROJECT_PATH: ./
@@ -49,7 +46,7 @@ jobs:
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
       - name: Restore LFS cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.2
         id: lfs-cache
         with:
           path: .git/lfs
@@ -63,7 +60,7 @@ jobs:
       
       # Restore Library cache
       - name: Restore Library cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ env.PROJECT_PATH }}/Library
           key: Library-{{ env.PROJECT_PATH }}
@@ -84,12 +81,12 @@ jobs:
           checkName: ${{ matrix.testMode }} Test Results
           coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;'
       # OUTPUT
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4.3.3
         if: always()
         with:
           name: Test results for ${{ matrix.testMode }}
           path: ${{ steps.tests.outputs.artifactsPath }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4.3.3
         if: always()
         with:
           name: Coverage results for ${{ matrix.testMode }}

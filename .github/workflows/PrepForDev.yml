@@ -11,5 +11,6 @@ jobs:
     uses: ./.github/workflows/UnitTests.yml
 
   build-project:
-    uses: ./.github/workflows/BuildGame.yml
     needs: unit-tests
+    uses: ./.github/workflows/BuildGame.yml
+    
