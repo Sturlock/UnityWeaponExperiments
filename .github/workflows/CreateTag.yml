@@ -22,4 +22,4 @@ jobs:
         run: |
           VERSION=$(grep -oP '(?<=^## \[)\d+\.\d+\.\d+(?=\])' CHANGELOG.md | head -n 1)
           echo "Current version: $VERSION"
-          echo "{name}={version}" >> $VERSION
+          echo "version=$VERSION" >> $GITHUB_ENV
