@@ -1,7 +1,6 @@
 name: Increment Version and Tag
 
 on:
-  - push
   - workflow_dispatch
   - workflow_call
 
@@ -23,3 +22,9 @@ jobs:
           VERSION=$(grep -oP '(?<=^## )\d+\.\d+\.\d+' CHANGELOG.md | head -n 1)
           echo "Current version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Create a new tag
+        run: |
+          NEW_VERSION=${{ env.version }}
+          git tag "v$NEW_VERSION"
+          git push origin "v$NEW_VERSION"
