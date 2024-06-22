@@ -22,5 +22,6 @@ workflows:
             editor_version: 2022.3.16f1
             target_platform: 'windows-il2cpp'
           build-target: StandaloneWindows64
+          project-path: './'
           compress: true
           context: unity
