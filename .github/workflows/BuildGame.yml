@@ -76,5 +76,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4.3.3
         with:
-          name: "${{ github.event.repository.name }} ${{ steps.unityBuilder.outputs.buildVersion }}-${{ github.ref_name }} (${{ env.TARGET_PLATFORM }})"
+          name: ${{ github.event.repository.name }} ${{ steps.unityBuilder.outputs.buildVersion }} (${{ env.TARGET_PLATFORM }})
           path: build/${{ env.TARGET_PLATFORM }}
