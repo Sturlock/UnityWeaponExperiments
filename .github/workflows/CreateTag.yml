@@ -1,4 +1,4 @@
-name: Increment Version and Tag
+name: Make Version Tag
 
 on:
   - workflow_dispatch
