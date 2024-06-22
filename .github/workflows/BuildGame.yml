@@ -10,9 +10,6 @@ on:
 
 env:
  PROJECT_PATH: ./
- UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
- UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
- UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
  TARGET_PLATFORM: StandaloneWindows64 # Build a Windows 64-bit standalone.
 
 jobs:
@@ -71,7 +68,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:    
+        with:
           projectPath: ${{ env.PROJECT_PATH }}
           targetPlatform: ${{ env.TARGET_PLATFORM }}
           versioning: Semantic
