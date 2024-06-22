@@ -1,16 +1,28 @@
 ﻿version: 2.1
+
 setup: true
-import:
-  - "jobs/UnityBuildGame.yml"
-  - "jobs/UnityActivation.yml"
 
 orbs:
   unity: game-ci/unity@1.7.0
 
 workflows:
-  Unity-Build-Game:
+  Activation:
     jobs:
-      - unityBuildGame
-  Get-Unity-License:
+      - unity/create-activation-file:
+          editor_version: 2022.3.16f1
+  Build:
     jobs:
-      - unityActivation
+      - unity/build:
+          name: 'build-Windows64-il2cpp'
+          step-name: 'Build StandaloneWindows64 il2cpp'
+          unity-license-var-name: 'UNITY_ENCODED_LICENSE'
+          unity-username-var-name: 'UNITY_USERNAME'
+          unity-password-var-name: 'UNITY_PASSWORD'
+          executor:
+            name: 'unity/windows-2019'
+            size: 'large'
+            editor_version: '2021.3.2f1'
+            target_platform: 'windows-il2cpp'
+          build-target: StandaloneWindows64
+          compress: true
+          context: unity
