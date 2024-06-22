@@ -1,6 +1,7 @@
 name: Increment Version and Tag
 
 on:
+  - push
   - workflow_dispatch
   - workflow_call
 
