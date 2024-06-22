@@ -1,5 +1,9 @@
 ﻿version: 2.1
-setup: true
+
+import:
+  - "jobs/UnityBuildGame.yml"
+  - "jobs/UnityActivation.yml"
+
 orbs:
   unity: game-ci/unity@1.7.0
 
