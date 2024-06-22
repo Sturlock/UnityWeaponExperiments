@@ -8,11 +8,11 @@ on:
 
 jobs:
   unit-tests:
-    uses: ./.github/workflows/UnitTests.yml
+    uses: ./.github/workflows/jobs/UnitTests.yml
     secrets: inherit 
 
   build-project:
     needs: unit-tests
-    uses: ./.github/workflows/BuildGame.yml
+    uses: ./.github/workflows/jobs/BuildGame.yml
     secrets: inherit
     
