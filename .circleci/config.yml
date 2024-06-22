@@ -10,7 +10,7 @@ orbs:
 workflows:
   Unity-Build-Game:
     jobs:
-      - unityBuildGame
+      - UnityBuildGame
   Get-Unity-License:
     jobs:
       - UnityActivation
