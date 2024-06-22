@@ -8,8 +8,7 @@ orbs:
 workflows:
   Activation:
     jobs:
-      - unity/create-activation-file:
-          editor_version: 2022.3.16f1
+      - unity/create-activation-file
 
       - unity/build:
           name: 'build-Windows64-il2cpp'
@@ -20,7 +19,7 @@ workflows:
           executor:
             name: 'unity/windows-2019'
             size: 'large'
-            editor_version: '2021.3.2f1'
+            editor_version: 2022.3.16f1
             target_platform: 'windows-il2cpp'
           build-target: StandaloneWindows64
           compress: true
