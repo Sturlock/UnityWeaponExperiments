@@ -9,7 +9,6 @@ on:
   - workflow_call
 
 env:
- PROJECT_PATH: ./
  TARGET_PLATFORM: StandaloneWindows64 # Build a Windows 64-bit standalone.
 
 jobs:
@@ -44,7 +43,7 @@ jobs:
       - name: Restore Library cache
         uses: actions/cache@v4.0.2
         with:
-          path: ${{ env.PROJECT_PATH }}/Library
+          path: ./Library
           key: Library-{{ env.PROJECT_PATH }}
           restore-keys: |
             Library-{{ env.PROJECT_PATH }}-
@@ -61,7 +60,7 @@ jobs:
             Build-
 
 # Builder
-      - name: Unity Builder - ${{ env.PROJECT_PATH }} (${{ env.TARGET_PLATFORM }})
+      - name: Unity Builder - ${{ github.event.repository.name }} (${{ env.TARGET_PLATFORM }})
         id: unityBuilder
         uses: game-ci/unity-builder@v4
         env:
@@ -69,7 +68,6 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: ${{ env.PROJECT_PATH }}
           targetPlatform: ${{ env.TARGET_PLATFORM }}
           versioning: Semantic
 
@@ -78,5 +76,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4.3.3
         with:
-          name: ${{ steps.unityBuilder.outputs.buildVersion }} ${{ steps.date.outputs.date }} (${{ env.TARGET_PLATFORM }})
+          name: "${{ github.event.repository.name }} ${{ steps.unityBuilder.outputs.buildVersion }}-${{ github.ref_name }} (${{ env.TARGET_PLATFORM }})"
           path: build/${{ env.TARGET_PLATFORM }}
