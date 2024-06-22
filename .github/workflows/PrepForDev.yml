@@ -9,12 +9,10 @@ on:
 jobs:
   unit-tests:
     uses: ./.github/workflows/UnitTests.yml
-    with: {}
     secrets: inherit 
 
   build-project:
     needs: unit-tests
     uses: ./.github/workflows/BuildGame.yml
-    with: {}
     secrets: inherit
     
