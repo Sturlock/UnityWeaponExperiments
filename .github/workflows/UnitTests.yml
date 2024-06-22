@@ -5,16 +5,16 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  #push:
-  #  branches-ignore:
-  #    - develop
-  #    - master
-  #    - 'CICD/**'
-  #    - '[Aa]rt/**'
-  #pull_request:
-  #  types:
-  #    - synchronize
-  #    - opened
+  push:
+    branches-ignore:
+      - develop
+      - master
+      - 'CICD/**'
+      - '[Aa]rt/**'
+  pull_request:
+    types:
+      - synchronize
+      - opened
   workflow_dispatch: {}
 
 env:
