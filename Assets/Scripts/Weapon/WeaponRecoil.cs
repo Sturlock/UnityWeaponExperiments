@@ -56,6 +56,7 @@ namespace Owl.Weapon
 		private void OnDisable()
 		{
 			_WeaponFireControl.WeaponFireAction -= DoFire;
+			PlayerInputHandler.WeaponAimAction -= DoAim;
 		}
 
 		private void DoAim(InputAction.CallbackContext callbackContext)

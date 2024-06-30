@@ -43,6 +43,8 @@ namespace Owl.Weapon
 		{
 			//This is safe to do as there should only be one Magazine per weapon.
 			_Magazine = GetComponentInChildren<Magazine>();
+			//This is safe to do as there should only be one AimDownSight per character.
+			GetComponentInParent<AimDownSight>().Initialize();
 
 			_FireRate = RpmToIntervalTime();
 		}
